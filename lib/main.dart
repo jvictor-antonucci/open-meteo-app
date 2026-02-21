@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:open_meteo_app/core/controllers/cubit/open_meteo_theme_cubit.dart';
 import 'package:open_meteo_app/core/route/app_router.dart';
 
 void main() {
@@ -14,10 +16,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Flutter Demo',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      routerConfig: appRouter.router,
+    return BlocProvider(
+      create: (context) => OpenMeteoThemeCubit(),
+      child: BlocBuilder<OpenMeteoThemeCubit, ThemeData>(
+        builder: (context, themeState) {
+          return MaterialApp.router(
+            title: 'Flutter Demo',
+            theme: themeState,
+            routerConfig: appRouter.router,
+          );
+        },
+      ),
     );
   }
 }
