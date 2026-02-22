@@ -1,16 +1,15 @@
 import 'package:bloc/bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class BottomNavigationCubit extends Cubit<int> {
-  final StatefulNavigationShell _navigationShell;
+  final int initialBranch;
+  final Function(int branch, {bool goToRoot}) goBranch;
 
-  BottomNavigationCubit({required StatefulNavigationShell navigationShell})
-    : _navigationShell = navigationShell,
-      super(navigationShell.currentIndex);
+  BottomNavigationCubit({required this.goBranch, required this.initialBranch})
+    : super(initialBranch);
 
-  void navigateTo(int branch, {bool goToRoot = false}) {
+  void navigateTo(int branch, {bool goToRoot = false}) async {
     try {
-      _navigationShell.goBranch(branch, initialLocation: goToRoot);
+      goBranch.call(branch, goToRoot: goToRoot);
       emit(branch);
     } catch (e) {
       return;

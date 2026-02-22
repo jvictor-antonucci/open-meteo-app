@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:open_meteo_app/core/services/geolocator_client.dart';
 import 'package:open_meteo_app/modules/bottom_navigation/presentation/controllers/bottom_navigation_cubit.dart';
 import 'package:open_meteo_app/modules/bottom_navigation/presentation/pages/bottom_navigation_page.dart';
 import 'package:open_meteo_app/modules/home/presentation/pages/home_page.dart';
@@ -65,8 +68,11 @@ class BottomNavigationRouteData extends StatefulShellRouteData {
     StatefulNavigationShell navigationShell,
   ) {
     return BlocProvider<BottomNavigationCubit>(
-      create: (context) =>
-          BottomNavigationCubit(navigationShell: navigationShell),
+      create: (context) => BottomNavigationCubit(
+        initialBranch: navigationShell.currentIndex,
+        goBranch: (branch, {bool goToRoot = false}) =>
+            navigationShell.goBranch(branch, initialLocation: goToRoot),
+      ),
       child: BottomNavigationPage(navigationShell: navigationShell),
     );
   }
