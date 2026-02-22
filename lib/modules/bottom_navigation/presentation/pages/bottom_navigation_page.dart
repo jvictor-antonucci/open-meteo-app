@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:open_meteo_app/modules/bottom_navigation/presentation/controllers/bottom_navigation_cubit.dart';
+import 'package:open_meteo_app/modules/bottom_navigation/presentation/widgets/widgets.dart';
 
 class BottomNavigationPage extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
@@ -18,25 +20,18 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
       builder: (context, state) {
         return Scaffold(
           body: widget.navigationShell,
-          bottomNavigationBar: BottomNavigationBar(
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.miniCenterFloat,
+          floatingActionButton: CustomBottomNavBar(
             currentIndex: state,
-            type: BottomNavigationBarType.fixed,
-            onTap: (index) {
-              context.read<BottomNavigationCubit>().navigateTo(
-                index,
-                goToRoot: state == index,
-              );
-            },
-            items: const [
-              BottomNavigationBarItem(label: 'Home', icon: Icon(Icons.home)),
-              BottomNavigationBarItem(
-                label: 'Saved',
-                icon: Icon(Icons.favorite),
-              ),
-              BottomNavigationBarItem(
-                label: 'Search',
-                icon: Icon(Icons.search),
-              ),
+            onTap: (index) => context.read<BottomNavigationCubit>().navigateTo(
+              index,
+              goToRoot: index == state,
+            ),
+            items: [
+              BottomNavBarItem(icon: LucideIcons.house, label: 'Home'),
+              BottomNavBarItem(icon: LucideIcons.bookmark, label: 'Saved'),
+              BottomNavBarItem(icon: LucideIcons.search, label: 'Search'),
             ],
           ),
         );

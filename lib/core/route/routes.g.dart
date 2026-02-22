@@ -17,13 +17,6 @@ RouteBase get $bottomNavigationRouteData => StatefulShellRouteData.$route(
           path: '/',
           name: 'home',
           factory: $HomePageRouteData._fromState,
-          routes: [
-            GoRouteData.$route(
-              path: '/location/details',
-              name: 'locationDetails',
-              factory: $LocationDetailsRouteData._fromState,
-            ),
-          ],
         ),
       ],
     ),
@@ -73,27 +66,6 @@ mixin $HomePageRouteData on GoRouteData {
 
   @override
   String get location => GoRouteData.$location('/');
-
-  @override
-  void go(BuildContext context) => context.go(location);
-
-  @override
-  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
-
-  @override
-  void pushReplacement(BuildContext context) =>
-      context.pushReplacement(location);
-
-  @override
-  void replace(BuildContext context) => context.replace(location);
-}
-
-mixin $LocationDetailsRouteData on GoRouteData {
-  static LocationDetailsRouteData _fromState(GoRouterState state) =>
-      LocationDetailsRouteData();
-
-  @override
-  String get location => GoRouteData.$location('/location/details');
 
   @override
   void go(BuildContext context) => context.go(location);

@@ -3,10 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:open_meteo_app/core/services/geolocator_client.dart';
 import 'package:open_meteo_app/modules/bottom_navigation/presentation/controllers/bottom_navigation_cubit.dart';
 import 'package:open_meteo_app/modules/bottom_navigation/presentation/pages/bottom_navigation_page.dart';
-import 'package:open_meteo_app/modules/home/presentation/pages/home_page.dart';
+import 'package:open_meteo_app/modules/location/presentation/pages/location_page.dart';
 import 'package:open_meteo_app/modules/saved/presentation/pages/saved_locations_page.dart';
 import 'package:open_meteo_app/modules/search/presentation/pages/search_locations_page.dart';
 
@@ -15,18 +14,7 @@ part 'routes.g.dart';
 @TypedStatefulShellRoute<BottomNavigationRouteData>(
   branches: [
     TypedStatefulShellBranch<HomePageBranchData>(
-      routes: [
-        TypedGoRoute<HomePageRouteData>(
-          name: 'home',
-          path: '/',
-          routes: [
-            TypedGoRoute<LocationDetailsRouteData>(
-              name: 'locationDetails',
-              path: '/location/details',
-            ),
-          ],
-        ),
-      ],
+      routes: [TypedGoRoute<HomePageRouteData>(name: 'home', path: '/')],
     ),
     TypedStatefulShellBranch<SavedLocationsPageBranchData>(
       routes: [
@@ -83,7 +71,7 @@ class HomePageBranchData extends StatefulShellBranchData {}
 class HomePageRouteData extends GoRouteData with $HomePageRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return HomePage();
+    return LocationPage();
   }
 }
 
@@ -103,14 +91,6 @@ class SearchPageRouteData extends GoRouteData with $SearchPageRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return SearchLocationsPage();
-  }
-}
-
-class LocationDetailsRouteData extends GoRouteData
-    with $LocationDetailsRouteData {
-  @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return Placeholder();
   }
 }
 
