@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:equatable/equatable.dart';
 
 class Coordinate extends Equatable {
@@ -23,4 +21,9 @@ class Coordinate extends Equatable {
 
   @override
   List<Object?> get props => [lat, long, elevation];
+}
+
+extension CoordExtension on Coordinate {
+  String get format =>
+      'H:${lat.toStringAsFixed(2)}° L:${long.toStringAsFixed(2)}°';
 }

@@ -127,3 +127,74 @@ abstract class AppTextTheme {
     ),
   );
 }
+
+abstract class CustomTextStyles {
+  static const hourLabel = TextStyle(
+    fontFamily: AppFonts.primary,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0,
+  );
+
+  static const rainPercentage = TextStyle(
+    fontFamily: AppFonts.primary,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    color: Color(0xFF4FC3F7),
+  );
+
+  static const metricLabel = TextStyle(
+    fontFamily: AppFonts.primary,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0.1,
+  );
+
+  static const muted = TextStyle(
+    fontFamily: AppFonts.primary,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    color: Color(0xFF9E9E9E),
+  );
+
+  static const hint = TextStyle(
+    fontFamily: AppFonts.primary,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: Color(0xFFAAAAAA),
+  );
+
+  static const navLabel = TextStyle(
+    fontFamily: AppFonts.primary,
+    fontSize: 13,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0,
+  );
+
+  static const forecastDay = TextStyle(
+    fontFamily: AppFonts.primary,
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0,
+  );
+
+  static const forecastTempMin = TextStyle(
+    fontFamily: AppFonts.primary,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: Color(0xFF9E9E9E),
+  );
+
+  static const forecastTempMax = TextStyle(
+    fontFamily: AppFonts.primary,
+    fontSize: 16,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const pageSubtitle = TextStyle(
+    fontFamily: AppFonts.primary,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    color: Color(0xFF9E9E9E),
+  );
+}

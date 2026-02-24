@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:open_meteo_app/core/entities/location.dart';
 import 'package:open_meteo_app/core/entities/weather_detail.dart';
@@ -16,24 +18,23 @@ class HiveClient {
   Future<void> init() async {
     await Hive.initFlutter();
     await (
-      Hive.openBox(HiveBoxes.savedLocations),
-      Hive.openBox(HiveBoxes.recentSearches),
-      Hive.openBox(HiveBoxes.cachedWeatherLocations),
+      Hive.openBox<String>(HiveBoxes.savedLocations),
+      Hive.openBox<String>(HiveBoxes.recentSearches),
+      Hive.openBox<String>(HiveBoxes.cachedWeatherLocations),
     ).wait;
     isInitialized = true;
   }
 
-  Box<Map<String, dynamic>> get _savedLocations =>
-      Hive.box(HiveBoxes.savedLocations);
-  Box<String> get _recentSearches => Hive.box(HiveBoxes.recentSearches);
-  Box<Map<String, dynamic>> get _cachedWeatherLocations =>
-      Hive.box(HiveBoxes.cachedWeatherLocations);
+  Box<String> get _savedLocations => Hive.box<String>(HiveBoxes.savedLocations);
+  Box<String> get _recentSearches => Hive.box<String>(HiveBoxes.recentSearches);
+  Box<String> get _cachedWeatherLocations =>
+      Hive.box<String>(HiveBoxes.cachedWeatherLocations);
 
   Future<List<Location>> getSavedLocations() async {
     if (!isInitialized) await init();
 
     return _savedLocations.values
-        .map((location) => Location.fromMap(location))
+        .map((location) => Location.fromJson(location).copyWith(isSaved: true))
         .toList();
   }
 
@@ -51,7 +52,7 @@ class HiveClient {
       return;
     }
 
-    await _savedLocations.put(location.id, location.toBoxMap());
+    await _savedLocations.put(location.id, location.toJson());
   }
 
   Future<List<String>> getRecentSearches() async {
@@ -73,17 +74,19 @@ class HiveClient {
   Future<WeatherDetail?> getCachedWeatherLocation(String locationId) async {
     if (!isInitialized) await init();
 
-    final weatherDetailMap = _cachedWeatherLocations.get(locationId);
-    final now = DateTime.now();
+    final weatherDetailJson = _cachedWeatherLocations.get(locationId);
 
-    if (weatherDetailMap == null ||
-        (DateTime.parse(
-          weatherDetailMap['updatedAt'] ?? now.toIso8601String(),
-        ).add(const Duration(minutes: 15)).isAfter(now))) {
+    if (weatherDetailJson == null) return null;
+
+    final now = DateTime.now();
+    final weatherDetailMap = jsonDecode(weatherDetailJson);
+    if ((DateTime.parse(
+      weatherDetailMap['updatedAt'] ?? now.toIso8601String(),
+    ).add(const Duration(minutes: 15)).isAfter(now))) {
       return null;
     }
 
-    return WeatherDetail.fromBox(weatherDetailMap);
+    return WeatherDetail.fromJson(weatherDetailJson);
   }
 
   Future<void> cacheWeatherLocation(
@@ -97,10 +100,10 @@ class HiveClient {
     final weatherDetailMap = weatherDetail.toBoxMap()
       ..update(
         'updatedAt',
-        (value) => DateTime.now(),
-        ifAbsent: () => DateTime.now(),
+        (value) => DateTime.now().toIso8601String(),
+        ifAbsent: () => DateTime.now().toIso8601String(),
       );
 
-    await _cachedWeatherLocations.put(locationId, weatherDetailMap);
+    await _cachedWeatherLocations.put(locationId, jsonEncode(weatherDetailMap));
   }
 }
