@@ -2,6 +2,12 @@
 
 A Flutter weather application built with clean architecture, BLoC state management, and the free [Open-Meteo API](https://open-meteo.com). It displays current conditions, hourly and 10-day forecasts, and adapts its theme dynamically based on weather conditions.
 
+| Home | Saved Locations | Search Locations |
+| -- | -- | -- |
+| <img width="1320" height="2868" alt="Simulator Screenshot - iPhone 16 Pro Max - 2026-02-24 at 19 55 25" src="https://github.com/user-attachments/assets/098ec319-caf0-4ba1-a663-a4d9f6c5003a" /> | <img width="1320" height="2868" alt="Simulator Screenshot - iPhone 16 Pro Max - 2026-02-24 at 19 55 33" src="https://github.com/user-attachments/assets/c0d5aecb-0c3e-4024-96de-d220eb6f68b7" /> | <img width="1320" height="2868" alt="Simulator Screenshot - iPhone 16 Pro Max - 2026-02-24 at 19 55 53" src="https://github.com/user-attachments/assets/cfe9ba5d-9762-43e2-9d34-7802c495132c" /> |
+
+
+
 ---
 
 ## Table of Contents
