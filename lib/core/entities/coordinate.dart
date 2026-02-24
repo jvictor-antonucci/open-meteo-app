@@ -24,5 +24,6 @@ class Coordinate extends Equatable {
 }
 
 extension CoordExtension on Coordinate {
-  String get format => 'H:$lat° L:$long°';
+  String get format =>
+      'H:${lat.toStringAsFixed(2)}° L:${long.toStringAsFixed(2)}°';
 }

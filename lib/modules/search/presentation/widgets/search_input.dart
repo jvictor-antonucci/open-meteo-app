@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:open_meteo_app/core/theme/open_meteo_app_font_theme.dart';
+import 'package:open_meteo_app/core/utils/debouncer.dart';
+import 'package:open_meteo_app/modules/search/presentation/controllers/search_locations_bloc.dart';
 import 'package:open_meteo_app/modules/search/presentation/widgets/search_input_overlay.dart';
 
 class SearchInput extends StatefulWidget {
-  const SearchInput({super.key});
+  final List<String> recentSearches;
+
+  const SearchInput({super.key, required this.recentSearches});
 
   @override
   State<SearchInput> createState() => _SearchInputState();
@@ -15,27 +20,7 @@ class _SearchInputState extends State<SearchInput> {
   final _focusNode = FocusNode();
   final _overlayController = OverlayPortalController();
   final _layerLink = LayerLink();
-
-  final List<String> _recentSearches = [
-    'San Francisco',
-    'Tokyo',
-    'London',
-    'Paris',
-    'Sydney',
-  ];
-
-  final List<String> _allCities = [
-    'San Francisco',
-    'Tokyo',
-    'London',
-    'Paris',
-    'Sydney',
-    'New York',
-    'Barcelona',
-    'Berlin',
-    'Amsterdam',
-    'Dubai',
-  ];
+  final _debouncer = Debouncer(duration: const Duration(seconds: 3));
 
   List<String> _suggestions = [];
   bool _isShowingRecent = true;
@@ -55,6 +40,11 @@ class _SearchInputState extends State<SearchInput> {
 
     _controller.addListener(() {
       _updateSuggestions(_controller.text);
+      _debouncer.run(
+        () => context.read<SearchLocationsBloc>().add(
+          SearchLocationDone(searchTerm: _controller.text),
+        ),
+      );
     });
   }
 
@@ -62,10 +52,10 @@ class _SearchInputState extends State<SearchInput> {
     setState(() {
       if (query.isEmpty) {
         _isShowingRecent = true;
-        _suggestions = _recentSearches;
+        _suggestions = widget.recentSearches;
       } else {
         _isShowingRecent = false;
-        _suggestions = _allCities
+        _suggestions = widget.recentSearches
             .where((c) => c.toLowerCase().contains(query.toLowerCase()))
             .toList();
       }

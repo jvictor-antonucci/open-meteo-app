@@ -1,13 +1,16 @@
 import 'package:equatable/equatable.dart';
 import 'package:open_meteo_app/core/entities/weather_property.dart';
+import 'package:open_meteo_app/core/enums/weather_status.dart';
 
 class HourlyWeather extends Equatable {
   final DateTime date;
+  final WeatherStatus weatherStatus;
   final WeatherProperty<double> temperature;
   final WeatherProperty<int> precipitationChance;
 
   const HourlyWeather({
     required this.date,
+    required this.weatherStatus,
     required this.temperature,
     required this.precipitationChance,
   });
@@ -15,22 +18,18 @@ class HourlyWeather extends Equatable {
   Map<String, dynamic> toBoxMap() {
     return {
       'date': date.toIso8601String(),
-      'temperature': temperature.toMap(),
-      'precipitationChance': precipitationChance.toMap(),
+      'weatherStatus': weatherStatus.code,
+      'temperature': temperature.toBoxMap(),
+      'precipitationChance': precipitationChance.toBoxMap(),
     };
   }
 
   factory HourlyWeather.fromBox(Map<String, dynamic> map) {
     return HourlyWeather(
       date: DateTime.parse(map['date']),
-      temperature: WeatherProperty.fromMap(
-        map['temperature'],
-        (value) => double.parse(value),
-      ),
-      precipitationChance: WeatherProperty.fromMap(
-        map['precipitationChance'],
-        (value) => int.parse(value),
-      ),
+      weatherStatus: WeatherStatus.fromCode(map['weatherStatus']),
+      temperature: WeatherProperty.fromBox(map['temperature']),
+      precipitationChance: WeatherProperty.fromBox(map['precipitationChance']),
     );
   }
 
@@ -40,6 +39,7 @@ class HourlyWeather extends Equatable {
   ) {
     return HourlyWeather(
       date: DateTime.parse(map['time']),
+      weatherStatus: WeatherStatus.fromCode(map['weather_code']),
       temperature: WeatherProperty<double>(
         value: map['temperature_2m'] ?? 0.0,
         unit: units['temperature_2m'],
@@ -52,5 +52,10 @@ class HourlyWeather extends Equatable {
   }
 
   @override
-  List<Object> get props => [date, temperature, precipitationChance];
+  List<Object> get props => [
+    date,
+    weatherStatus,
+    temperature,
+    precipitationChance,
+  ];
 }

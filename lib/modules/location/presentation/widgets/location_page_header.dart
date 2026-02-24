@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:open_meteo_app/core/entities/coordinate.dart';
 import 'package:open_meteo_app/core/enums/weather_status.dart';
@@ -7,11 +9,21 @@ class LocationPageHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double pageHeight;
   final WeatherStatus weatherStatus;
   final Coordinate coordinate;
+  final String city;
+  final String country;
+  final DateTime date;
+  final String formattedApparentTemperature;
+  final String formattedTemperature;
 
   const LocationPageHeaderDelegate({
     required this.pageHeight,
     required this.weatherStatus,
     required this.coordinate,
+    required this.city,
+    required this.country,
+    required this.date,
+    required this.formattedApparentTemperature,
+    required this.formattedTemperature,
   });
 
   @override
@@ -42,47 +54,73 @@ class LocationPageHeaderDelegate extends SliverPersistentHeaderDelegate {
         ),
       ),
       child: Stack(
+        fit: StackFit.expand,
         children: [
-          Positioned(
-            top: topPadding + 12,
-            left: 24,
-            right: 24,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  spacing: 6,
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: colors.primaryContainer,
-                      radius: 16,
-                      child: Icon(
-                        LucideIcons.mapPin,
-                        size: 16,
-                        color: colors.onPrimaryContainer,
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        'San Francisco, United States',
-                        style: textStyles.bodyMedium?.apply(
-                          color: colors.onPrimary,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ),
-                  ],
+          if (context.canPop())
+            Positioned(
+              top: topPadding + 12,
+              left: 24,
+              child: GestureDetector(
+                onTap: () => context.pop(),
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: colors.surfaceContainerHigh,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    LucideIcons.chevronLeft600,
+                    color: colors.primary,
+                  ),
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  'Thursday, February 19 - Updated 10 min ago',
-                  style: textStyles.bodySmall?.apply(color: colors.onPrimary),
-                ),
-              ],
+              ),
             ),
-          ),
+
+          if (!context.canPop())
+            Positioned(
+              top: topPadding + 12,
+              left: 24,
+              right: 24,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    spacing: 6,
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: colors.primaryContainer,
+                        radius: 10,
+                        child: Icon(
+                          LucideIcons.mapPin,
+                          size: 12,
+                          color: colors.onPrimaryContainer,
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          (city.isNotEmpty)
+                              ? '$city${country.isNotEmpty ? ' $country' : ''}'
+                              : 'Current Position',
+                          style: textStyles.bodyMedium?.apply(
+                            color: colors.onPrimary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    DateFormat('EEEE, MMMM d').format(date),
+                    style: textStyles.bodySmall?.apply(color: colors.onPrimary),
+                  ),
+                ],
+              ),
+            ),
 
           Positioned(
             bottom: 24,
@@ -99,8 +137,34 @@ class LocationPageHeaderDelegate extends SliverPersistentHeaderDelegate {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     spacing: 6,
                     children: [
+                      if (context.canPop())
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          spacing: 6,
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: colors.primaryContainer,
+                              radius: 10,
+                              child: Icon(
+                                LucideIcons.mapPin,
+                                size: 14,
+                                color: colors.onPrimaryContainer,
+                              ),
+                            ),
+                            Text(
+                              (city.isNotEmpty)
+                                  ? '$city${country.isNotEmpty ? ' $country' : ''}'
+                                  : 'Current Position',
+                              style: textStyles.bodyMedium?.apply(
+                                color: colors.onPrimary,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
                       Text(
-                        '18°',
+                        formattedTemperature,
                         style: textStyles.displayLarge?.apply(
                           color: colors.onPrimary,
                         ),
@@ -124,7 +188,7 @@ class LocationPageHeaderDelegate extends SliverPersistentHeaderDelegate {
                         ),
                       ),
                       Text(
-                        '${coordinate.format} • Feels 16',
+                        '${coordinate.format} • Feels $formattedApparentTemperature',
                         style: textStyles.labelLarge?.apply(
                           color: colors.onPrimary,
                         ),

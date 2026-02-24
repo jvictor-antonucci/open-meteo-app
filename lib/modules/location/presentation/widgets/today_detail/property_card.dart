@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:open_meteo_app/core/enums/weather_status.dart';
+import 'package:open_meteo_app/modules/location/domain/enums/weather_metric.dart';
 
 class PropertyCard extends StatelessWidget {
-  final String label;
+  final WeatherMetric metric;
   final String formattedValue;
-  final String description;
-  final WeatherStatus weatherStatus;
 
   const PropertyCard({
     super.key,
-    required this.label,
+    required this.metric,
     required this.formattedValue,
-    required this.description,
-    required this.weatherStatus,
   });
 
   @override
@@ -42,15 +38,11 @@ class PropertyCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 16,
-                  backgroundColor: colors.primaryContainer,
-                  child: Icon(
-                    weatherStatus.icon,
-                    color: colors.primary,
-                    size: 16,
-                  ),
+                  backgroundColor: metric.backgroundColor,
+                  child: Icon(metric.icon, color: metric.color, size: 16),
                 ),
                 Text(
-                  label,
+                  metric.label,
                   style: textStyles.titleSmall?.apply(
                     color: colors.onSurfaceVariant,
                   ),
@@ -64,7 +56,7 @@ class PropertyCard extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text(
-              description,
+              metric.description,
               style: textStyles.bodySmall?.apply(
                 color: colors.onSurfaceVariant,
               ),

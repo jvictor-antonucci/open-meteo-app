@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:open_meteo_app/core/enums/weather_status.dart';
 import 'package:open_meteo_app/modules/location/presentation/widgets/hourly_forecast/hourly_forecast_item.dart';
 
 class HourlyForecast extends StatelessWidget {
   final List<HourlyForecastItemDetails> items;
-  final int currentIndex;
-  final Function(int index) onTap;
 
-  const HourlyForecast({
-    super.key,
-    required this.items,
-    required this.currentIndex,
-    required this.onTap,
-  });
+  const HourlyForecast({super.key, required this.items});
 
   @override
   Widget build(BuildContext context) {
@@ -53,18 +47,17 @@ class HourlyForecast extends StatelessWidget {
               padding: const EdgeInsets.only(left: 16),
               scrollDirection: Axis.horizontal,
               children: List.generate(items.length, (index) {
-                final isSelected = currentIndex == index;
                 final item = items[index];
+                final isSelected = DateTime.now().hour == item.date.hour;
 
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: HourlyForecastItem(
-                    formattedDateTime: item.formattedDateTime,
+                    formattedDateTime: DateFormat('j').format(item.date),
                     temperature: item.temperature,
                     chanceOfRaining: item.chanceOfRaining,
                     isSelected: isSelected,
                     weatherStatus: item.weatherStatus,
-                    onTap: () => onTap.call(index),
                   ),
                 );
               }),
@@ -77,7 +70,7 @@ class HourlyForecast extends StatelessWidget {
 }
 
 class HourlyForecastItemDetails {
-  final String formattedDateTime;
+  final DateTime date;
   final WeatherStatus weatherStatus;
   final String temperature;
   final String chanceOfRaining;
@@ -85,7 +78,7 @@ class HourlyForecastItemDetails {
   HourlyForecastItemDetails({
     required this.temperature,
     required this.chanceOfRaining,
-    required this.formattedDateTime,
+    required this.date,
     required this.weatherStatus,
   });
 }

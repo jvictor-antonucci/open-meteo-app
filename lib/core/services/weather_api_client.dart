@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 import 'package:open_meteo_app/core/entities/coordinate.dart';
 import 'package:open_meteo_app/core/entities/daily_weather.dart';
 import 'package:open_meteo_app/core/entities/hourly_weather.dart';
@@ -35,8 +36,60 @@ class WeatherApiClient {
 
   const WeatherApiClient({required Dio client}) : _client = client;
 
-  Future<Result<WeatherDetail>> getLocationWeatherDetail({
+  Future<Result<WeatherDetail>> getForecastWeatherDetail({
+    required Coordinate coordinate,
     required DateTime date,
+  }) async {
+    try {
+      final queryParameters = {
+        'latitude': coordinate.lat,
+        'longitude': coordinate.long,
+        'hourly': weatherDetailProperties.join(','),
+        'start_date': DateFormat('y-m-d').format(date),
+        'end_date': DateFormat('y-m-d').format(date),
+        'forecast_days': 1,
+      };
+
+      final response = await _client.get(
+        '/forecast',
+        queryParameters: queryParameters,
+      );
+
+      if (response.data['error']) {
+        return Result.error(Exception());
+      }
+
+      final hourlyWeather = List<HourlyWeather>.generate(
+        response.data['hourly']?['time']?.length ?? 0,
+        (index) {
+          final hourlyMap = response.data['hourly'] as Map<String, dynamic>;
+          final map = <String, dynamic>{
+            for (final element in hourlyMap.entries)
+              element.key: element.value[index],
+          };
+          return HourlyWeather.fromMap(map, response.data['hourly_units']);
+        },
+      );
+
+      final weatherMap = <String, dynamic>{
+        for (final entry in (response.data['hourly'] as Map).entries)
+          entry.key: entry.value[date.hour],
+      };
+
+      final weatherDetail = WeatherDetail.fromMap(
+        weatherMap,
+        response.data['hourly_units'],
+        hourlyWeatherList: hourlyWeather,
+        dailyWeatherList: [],
+      );
+
+      return Result.ok(weatherDetail);
+    } catch (e) {
+      return Result.error(e as Exception);
+    }
+  }
+
+  Future<Result<WeatherDetail>> getLocationWeatherDetail({
     required Coordinate coordinate,
   }) async {
     try {

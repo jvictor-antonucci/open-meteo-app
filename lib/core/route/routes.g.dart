@@ -6,7 +6,11 @@ part of 'routes.dart';
 // GoRouterGenerator
 // **************************************************************************
 
-List<RouteBase> get $appRoutes => [$bottomNavigationRouteData];
+List<RouteBase> get $appRoutes => [
+  $bottomNavigationRouteData,
+  $searchLocationDetailsRouteData,
+  $savedLocationDetailsRouteData,
+];
 
 RouteBase get $bottomNavigationRouteData => StatefulShellRouteData.$route(
   factory: $BottomNavigationRouteDataExtension._fromState,
@@ -23,32 +27,18 @@ RouteBase get $bottomNavigationRouteData => StatefulShellRouteData.$route(
     StatefulShellBranchData.$branch(
       routes: [
         GoRouteData.$route(
-          path: '/saved-locations',
+          path: '/saved',
           name: 'savedLocations',
           factory: $SavedLocationsPageRouteData._fromState,
-          routes: [
-            GoRouteData.$route(
-              path: '/location/details',
-              name: 'savedLocationDetails',
-              factory: $SavedLocationDetailsRouteData._fromState,
-            ),
-          ],
         ),
       ],
     ),
     StatefulShellBranchData.$branch(
       routes: [
         GoRouteData.$route(
-          path: '/search-locations',
+          path: '/search',
           name: 'searchLocations',
           factory: $SearchPageRouteData._fromState,
-          routes: [
-            GoRouteData.$route(
-              path: '/location/details',
-              name: 'searchLocationDetails',
-              factory: $SearchLocationDetailsRouteData._fromState,
-            ),
-          ],
         ),
       ],
     ),
@@ -86,28 +76,7 @@ mixin $SavedLocationsPageRouteData on GoRouteData {
       SavedLocationsPageRouteData();
 
   @override
-  String get location => GoRouteData.$location('/saved-locations');
-
-  @override
-  void go(BuildContext context) => context.go(location);
-
-  @override
-  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
-
-  @override
-  void pushReplacement(BuildContext context) =>
-      context.pushReplacement(location);
-
-  @override
-  void replace(BuildContext context) => context.replace(location);
-}
-
-mixin $SavedLocationDetailsRouteData on GoRouteData {
-  static SavedLocationDetailsRouteData _fromState(GoRouterState state) =>
-      SavedLocationDetailsRouteData();
-
-  @override
-  String get location => GoRouteData.$location('/location/details');
+  String get location => GoRouteData.$location('/saved');
 
   @override
   void go(BuildContext context) => context.go(location);
@@ -128,7 +97,7 @@ mixin $SearchPageRouteData on GoRouteData {
       SearchPageRouteData();
 
   @override
-  String get location => GoRouteData.$location('/search-locations');
+  String get location => GoRouteData.$location('/search');
 
   @override
   void go(BuildContext context) => context.go(location);
@@ -144,23 +113,66 @@ mixin $SearchPageRouteData on GoRouteData {
   void replace(BuildContext context) => context.replace(location);
 }
 
+RouteBase get $searchLocationDetailsRouteData => GoRouteData.$route(
+  path: '/search/details',
+  name: 'searchLocationDetails',
+  factory: $SearchLocationDetailsRouteData._fromState,
+);
+
 mixin $SearchLocationDetailsRouteData on GoRouteData {
   static SearchLocationDetailsRouteData _fromState(GoRouterState state) =>
-      SearchLocationDetailsRouteData();
+      SearchLocationDetailsRouteData(state.extra as Location);
+
+  SearchLocationDetailsRouteData get _self =>
+      this as SearchLocationDetailsRouteData;
 
   @override
-  String get location => GoRouteData.$location('/location/details');
+  String get location => GoRouteData.$location('/search/details');
 
   @override
-  void go(BuildContext context) => context.go(location);
+  void go(BuildContext context) => context.go(location, extra: _self.$extra);
 
   @override
-  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+  Future<T?> push<T>(BuildContext context) =>
+      context.push<T>(location, extra: _self.$extra);
 
   @override
   void pushReplacement(BuildContext context) =>
-      context.pushReplacement(location);
+      context.pushReplacement(location, extra: _self.$extra);
 
   @override
-  void replace(BuildContext context) => context.replace(location);
+  void replace(BuildContext context) =>
+      context.replace(location, extra: _self.$extra);
+}
+
+RouteBase get $savedLocationDetailsRouteData => GoRouteData.$route(
+  path: '/saved/details',
+  name: 'savedLocationDetails',
+  factory: $SavedLocationDetailsRouteData._fromState,
+);
+
+mixin $SavedLocationDetailsRouteData on GoRouteData {
+  static SavedLocationDetailsRouteData _fromState(GoRouterState state) =>
+      SavedLocationDetailsRouteData(state.extra as Location);
+
+  SavedLocationDetailsRouteData get _self =>
+      this as SavedLocationDetailsRouteData;
+
+  @override
+  String get location => GoRouteData.$location('/saved/details');
+
+  @override
+  void go(BuildContext context) => context.go(location, extra: _self.$extra);
+
+  @override
+  Future<T?> push<T>(BuildContext context) =>
+      context.push<T>(location, extra: _self.$extra);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location, extra: _self.$extra);
+
+  @override
+  void replace(BuildContext context) =>
+      context.replace(location, extra: _self.$extra);
 }

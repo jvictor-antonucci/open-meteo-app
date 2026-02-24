@@ -1,15 +1,19 @@
-import 'package:equatable/equatable.dart';
-import 'package:open_meteo_app/core/entities/daily_weather.dart';
+import 'dart:convert';
 
+import 'package:equatable/equatable.dart';
+
+import 'package:open_meteo_app/core/entities/daily_weather.dart';
 import 'package:open_meteo_app/core/entities/hourly_weather.dart';
 import 'package:open_meteo_app/core/entities/weather_property.dart';
+import 'package:open_meteo_app/core/enums/weather_status.dart';
 
 class WeatherDetail extends Equatable {
   final List<HourlyWeather> hourlyWeather;
   final List<DailyWeather> dailyWeather;
+  final WeatherStatus weatherStatus;
   final WeatherProperty<int> relativeHumidity;
   final WeatherProperty<double> apparentTemperature;
-  final WeatherProperty<int> visibility;
+  final WeatherProperty<double> visibility;
   final WeatherProperty<double> windSpeed;
   final WeatherProperty<double> surfacePressure;
   final WeatherProperty<double> precipitation;
@@ -31,22 +35,24 @@ class WeatherDetail extends Equatable {
     required this.isDay,
     required this.temperature,
     required this.precipitationChance,
+    required this.weatherStatus,
   });
 
   Map<String, dynamic> toBoxMap() {
     return {
       'hourlyWeather': hourlyWeather.map((x) => x.toBoxMap()).toList(),
       'dailyWeather': dailyWeather.map((e) => e.toBoxMap()).toList(),
-      'relativeHumidity': relativeHumidity.toMap(),
-      'apparentTemperature': apparentTemperature.toMap(),
-      'visibility': visibility.toMap(),
-      'windSpeed': windSpeed.toMap(),
-      'surfacePressure': surfacePressure.toMap(),
-      'precipitation': precipitation.toMap(),
-      'uvIndex': uvIndex.toMap(),
+      'relativeHumidity': relativeHumidity.toBoxMap(),
+      'apparentTemperature': apparentTemperature.toBoxMap(),
+      'visibility': visibility.toBoxMap(),
+      'windSpeed': windSpeed.toBoxMap(),
+      'surfacePressure': surfacePressure.toBoxMap(),
+      'precipitation': precipitation.toBoxMap(),
+      'uvIndex': uvIndex.toBoxMap(),
       'isDay': isDay.toString(),
-      'temperature': temperature.toMap(),
-      'precipitationChance': precipitationChance.toMap(),
+      'temperature': temperature.toBoxMap(),
+      'precipitationChance': precipitationChance.toBoxMap(),
+      'weatherStatus': weatherStatus.code,
     };
   }
 
@@ -58,43 +64,17 @@ class WeatherDetail extends Equatable {
       dailyWeather: (map['dailyWeather'] as List)
           .map((e) => DailyWeather.fromBox(e))
           .toList(),
-      relativeHumidity: WeatherProperty.fromMap(
-        map['relativeHumidity'],
-        (value) => int.parse(value),
-      ),
-      apparentTemperature: WeatherProperty.fromMap(
-        map['apparentTemperature'],
-        (value) => double.parse(value),
-      ),
-      visibility: WeatherProperty.fromMap(
-        map['visibility'],
-        (value) => int.parse(value),
-      ),
-      windSpeed: WeatherProperty.fromMap(
-        map['windSpeed'],
-        (value) => double.parse(value),
-      ),
-      surfacePressure: WeatherProperty.fromMap(
-        map['surfacePressure'],
-        (value) => double.parse(value),
-      ),
-      precipitation: WeatherProperty.fromMap(
-        map['precipitation'],
-        (value) => double.parse(value),
-      ),
-      uvIndex: WeatherProperty.fromMap(
-        map['uvIndex'],
-        (value) => double.parse(value),
-      ),
+      relativeHumidity: WeatherProperty.fromBox(map['relativeHumidity']),
+      apparentTemperature: WeatherProperty.fromBox(map['apparentTemperature']),
+      visibility: WeatherProperty.fromBox(map['visibility']),
+      windSpeed: WeatherProperty.fromBox(map['windSpeed']),
+      surfacePressure: WeatherProperty.fromBox(map['surfacePressure']),
+      precipitation: WeatherProperty.fromBox(map['precipitation']),
+      uvIndex: WeatherProperty.fromBox(map['uvIndex']),
       isDay: bool.parse(map['isDay']),
-      temperature: WeatherProperty.fromMap(
-        map['temperature'],
-        (value) => double.parse(value),
-      ),
-      precipitationChance: WeatherProperty.fromMap(
-        map['precipitationChance'],
-        (value) => int.parse(value),
-      ),
+      temperature: WeatherProperty.fromBox(map['temperature']),
+      precipitationChance: WeatherProperty.fromBox(map['precipitationChance']),
+      weatherStatus: WeatherStatus.fromCode(map['weatherStatus']),
     );
   }
 
@@ -107,6 +87,7 @@ class WeatherDetail extends Equatable {
     return WeatherDetail(
       dailyWeather: dailyWeatherList,
       hourlyWeather: hourlyWeatherList,
+      weatherStatus: WeatherStatus.fromCode(map['weather_code']),
       relativeHumidity: WeatherProperty<int>(
         value: map['relative_humidity_2m'],
         unit: units['relative_humidity_2m'],
@@ -115,7 +96,7 @@ class WeatherDetail extends Equatable {
         value: map['apparent_temperature'],
         unit: units['apparent_temperature'],
       ),
-      visibility: WeatherProperty<int>(
+      visibility: WeatherProperty<double>(
         value: map['visibility'],
         unit: units['visibility'],
       ),
@@ -152,6 +133,7 @@ class WeatherDetail extends Equatable {
     return [
       hourlyWeather,
       dailyWeather,
+      weatherStatus,
       relativeHumidity,
       apparentTemperature,
       visibility,
@@ -164,4 +146,41 @@ class WeatherDetail extends Equatable {
       precipitationChance,
     ];
   }
+
+  WeatherDetail copyWith({
+    List<HourlyWeather>? hourlyWeather,
+    List<DailyWeather>? dailyWeather,
+    WeatherStatus? weatherStatus,
+    WeatherProperty<int>? relativeHumidity,
+    WeatherProperty<double>? apparentTemperature,
+    WeatherProperty<double>? visibility,
+    WeatherProperty<double>? windSpeed,
+    WeatherProperty<double>? surfacePressure,
+    WeatherProperty<double>? precipitation,
+    WeatherProperty<double>? uvIndex,
+    bool? isDay,
+    WeatherProperty<double>? temperature,
+    WeatherProperty<int>? precipitationChance,
+  }) {
+    return WeatherDetail(
+      hourlyWeather: hourlyWeather ?? this.hourlyWeather,
+      dailyWeather: dailyWeather ?? this.dailyWeather,
+      weatherStatus: weatherStatus ?? this.weatherStatus,
+      relativeHumidity: relativeHumidity ?? this.relativeHumidity,
+      apparentTemperature: apparentTemperature ?? this.apparentTemperature,
+      visibility: visibility ?? this.visibility,
+      windSpeed: windSpeed ?? this.windSpeed,
+      surfacePressure: surfacePressure ?? this.surfacePressure,
+      precipitation: precipitation ?? this.precipitation,
+      uvIndex: uvIndex ?? this.uvIndex,
+      isDay: isDay ?? this.isDay,
+      temperature: temperature ?? this.temperature,
+      precipitationChance: precipitationChance ?? this.precipitationChance,
+    );
+  }
+
+  String toJson() => json.encode(toBoxMap());
+
+  factory WeatherDetail.fromJson(String source) =>
+      WeatherDetail.fromBox(json.decode(source));
 }

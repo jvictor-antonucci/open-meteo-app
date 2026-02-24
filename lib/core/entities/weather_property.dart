@@ -6,19 +6,18 @@ class WeatherProperty<T> extends Equatable {
 
   const WeatherProperty({required this.value, required this.unit});
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toBoxMap() {
     return {'value': value, 'unit': unit};
   }
 
-  factory WeatherProperty.fromMap(
-    Map<String, dynamic> map,
-    T Function(dynamic value) valueParser,
-  ) {
-    return WeatherProperty<T>(
-      value: valueParser.call(map['value']),
-      unit: map['unit'] ?? '',
-    );
+  factory WeatherProperty.fromBox(Map<String, dynamic> map) {
+    return WeatherProperty(value: map['value'], unit: map['unit']);
   }
+
+  String get format => T == double
+      ? '${(value as double).toStringAsFixed(0)}$unit'
+      : '$value$unit';
+
   @override
   List<Object?> get props => [value, unit];
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:open_meteo_app/modules/search/presentation/controllers/search_locations_bloc.dart';
 import 'package:open_meteo_app/modules/search/presentation/widgets/search_input.dart';
 
 class SearchAppBar extends StatelessWidget {
@@ -26,7 +28,11 @@ class SearchAppBar extends StatelessWidget {
             child: Icon(LucideIcons.map, color: colors.primary),
           ),
         ),
-        title: SearchInput(),
+        title: BlocBuilder<SearchLocationsBloc, SearchLocationsState>(
+          builder: (context, state) {
+            return SearchInput(recentSearches: state.recentSearches);
+          },
+        ),
       ),
     );
   }

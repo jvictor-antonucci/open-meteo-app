@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:open_meteo_app/core/enums/weather_status.dart';
 import 'package:open_meteo_app/modules/location/presentation/widgets/forecast/forecast_item.dart';
 
 class Forecast extends StatelessWidget {
-  const Forecast({super.key});
+  final List<ForecastItemData> items;
+
+  const Forecast({super.key, required this.items});
 
   @override
   Widget build(BuildContext context) {
@@ -21,20 +24,41 @@ class Forecast extends StatelessWidget {
             '10-Day Forecast',
             style: textStyles.headlineMedium?.apply(color: colors.onSurface),
           ),
-          ...List.generate(
-            10,
-            (index) => ForecastItem(
-              formattedDate: 'Now',
-              chanceOfRaining: '10',
-              maxTemperature: 10,
-              minTemperature: 20,
-              globalMaxTemperature: 7,
-              globalMinTemperature: 27,
-              weatherStatus: WeatherStatus.clearSky,
-            ),
+          ...List.from(
+            items.map((item) {
+              return ForecastItem(
+                formattedDate: DateFormat('E').format(item.date),
+                chanceOfRaining: item.formattedPrecipitationChance,
+                maxTemperature: item.maxTemperature,
+                minTemperature: item.minTemperature,
+                globalMaxTemperature: item.globalMaxTemp,
+                globalMinTemperature: item.globalMinTemp,
+                weatherStatus: item.weatherStatus,
+              );
+            }),
           ),
         ],
       ),
     );
   }
+}
+
+class ForecastItemData {
+  final DateTime date;
+  final String formattedPrecipitationChance;
+  final double maxTemperature;
+  final double minTemperature;
+  final double globalMaxTemp;
+  final double globalMinTemp;
+  final WeatherStatus weatherStatus;
+
+  const ForecastItemData({
+    required this.date,
+    required this.formattedPrecipitationChance,
+    required this.maxTemperature,
+    required this.minTemperature,
+    required this.globalMaxTemp,
+    required this.globalMinTemp,
+    required this.weatherStatus,
+  });
 }
